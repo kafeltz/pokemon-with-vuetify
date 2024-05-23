@@ -11,6 +11,10 @@ import { setupLayouts } from 'virtual:generated-layouts'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   extendRoutes: setupLayouts,
+  routes: [
+    { path: '/', name: 'home', component: () => import('../pages/index.vue') },
+    { path: '/list', name: 'pokemon-list', components: () => import('../pages/list.vue') },
+  ],
 })
 
 export default router

@@ -1,7 +1,5 @@
 <script setup>
-  function onClickIcon() {
-    console.log(123);
-  }
+//
 </script>
 
 <template>
@@ -15,15 +13,15 @@
 
       <div class="py-4" />
       <v-row>
-        <v-col cols="12" @click="onClickIcon">
-          <v-img class="custom" height="96" src="@/assets/pikachu.png"  />
+        <v-col cols="12">
+          <router-link to="/list">
+            <v-img class="custom" height="96" src="@/assets/pikachu.png"  />
+          </router-link>
         </v-col>
       </v-row>
     </v-responsive>
   </v-container>
 </template>
-
-
 
 <style scoped lang="sass">
   .custom
