@@ -2,13 +2,20 @@
 
 import { ref, watch } from 'vue';
 import { listPokemons, getPokemonInfo } from '../api/pokemon-api.js';
-import { useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router/auto'
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 
 const loading = ref(false);
-const error = ref(null);
+// const error = ref(null);
 const list = ref([]);
 
-async function requestList(page = 0, limit = 15) {
+const router = useRouter()
+const route = useRoute();
+
+async function requestList() {
+  const limit = 15;
+  const page = route.params.page || 1;
+
   try {
     const pokemons = (await listPokemons(page, limit)).results;
 
@@ -20,8 +27,6 @@ async function requestList(page = 0, limit = 15) {
       x.push(pokemonInfo);
     }
 
-    console.log(x[0].name);
-
     list.value = x;
   } catch (err) {
     // error.value = err.toString()
@@ -30,9 +35,34 @@ async function requestList(page = 0, limit = 15) {
   }
 }
 
-const route = useRoute()
+console.info('---', route.query.page);
+
 
 watch(() => route.params.page, requestList, { immediate: true })
+
+const pageNumber = ref(1);
+
+function updatePageNumber(value) {
+  pageNumber.value = value;
+}
+
+onBeforeRouteLeave((to, from) => {
+  console.log('onBeforeRouteLeave');
+})
+
+onBeforeRouteUpdate((to, from) => {
+  console.log('onBeforeRouteUpdate');
+})
+
+watch(() => pageNumber.value, () => {
+
+  console.log(router);
+
+  router.push(`/list/?page=${pageNumber.value}`);
+
+  console.log(`watch: ${pageNumber.value}`);
+}, { immediate: true })
+
 
 </script>
 
@@ -42,25 +72,29 @@ watch(() => route.params.page, requestList, { immediate: true })
   <div class="ga-5 d-flex flex-wrap">
     <!-- <v-card v-for="pokemon in list" :key="pokemon['name']"
       :class="['d-flex justify-center align-center bg-secondary', 'elevation-3']" height="100" width="100"> -->
-      <div class="pokemon-card elevation-3" :class="[pokemon['type']]" v-for="pokemon in list" :key="pokemon['name']">
-        <p class="font-weight-medium text-center text-capitalize black">{{ pokemon['name'] }}</p>
+    <div class="pokemon-card elevation-3" :class="[pokemon['type']]" v-for="pokemon in list" :key="pokemon['name']">
+      <p class="font-weight-medium text-center text-capitalize black">{{ pokemon['name'] }}</p>
 
-        <v-img v-if="pokemon['type'] == 'grass'" class="pokemon-icon" :class="[pokemon['type']]" height="30" src="@/assets/icon-grass.png"  />
-        <v-img v-if="pokemon['type'] == 'fire'" class="pokemon-icon" :class="[pokemon['type']]" height="30" src="@/assets/icon-fire.png"  />
-        <v-img v-if="pokemon['type'] == 'water'" class="pokemon-icon" :class="[pokemon['type']]" height="30" src="@/assets/icon-water.png"  />
-        <v-img v-if="pokemon['type'] == 'bug'" class="pokemon-icon" :class="[pokemon['type']]" height="30" src="@/assets/icon-bug.png"  />
+      <v-img v-if="pokemon['type'] == 'grass'" class="pokemon-icon" :class="[pokemon['type']]" height="30"
+        src="@/assets/icon-grass.png" />
+      <v-img v-if="pokemon['type'] == 'fire'" class="pokemon-icon" :class="[pokemon['type']]" height="30"
+        src="@/assets/icon-fire.png" />
+      <v-img v-if="pokemon['type'] == 'water'" class="pokemon-icon" :class="[pokemon['type']]" height="30"
+        src="@/assets/icon-water.png" />
+      <v-img v-if="pokemon['type'] == 'bug'" class="pokemon-icon" :class="[pokemon['type']]" height="30"
+        src="@/assets/icon-bug.png" />
 
-        <!-- <p>{{ pokemon['type'] }}</p> -->
-        <v-img :src="pokemon['male']" aspect-ratio="1" max-height="100"></v-img>
-      </div>
+      <!-- <p>{{ pokemon['type'] }}</p> -->
+      <v-img :src="pokemon['male']" aspect-ratio="1" max-height="100"></v-img>
+    </div>
     <!-- </v-card> -->
   </div>
 
-  <v-pagination :length="4"></v-pagination>
+  <v-pagination :length="10" next-icon="mdi-menu-right" prev-icon="mdi-menu-left" :total-visible="7"
+    @update:model-value="updatePageNumber" :model-value="pageNumber" :elevation="0"></v-pagination>
 
   <v-container class="fill-height">
     <v-responsive class="align-centerfill-height mx-auto" max-width="900">
-
     </v-responsive>
   </v-container>
 </template>

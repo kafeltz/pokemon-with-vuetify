@@ -13,7 +13,8 @@ const router = createRouter({
   extendRoutes: setupLayouts,
   routes: [
     { path: '/', name: 'home', component: () => import('../pages/index.vue') },
-    { path: '/list', name: 'pokemon-list', components: () => import('../pages/list.vue') },
+    // { path: '/list', name: 'pokemon-list', components: () => import('../pages/list.vue') },
+    // { path: '/list/:page', name: 'pokemon-list-paged', components: () => import('../pages/list.vue') },
   ],
 })
 
