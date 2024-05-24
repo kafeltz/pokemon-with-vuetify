@@ -14,7 +14,7 @@
       <div class="py-4" />
       <v-row>
         <v-col cols="12">
-          <router-link to="/list">
+          <router-link to="/list/?page=1">
             <v-img class="custom" height="96" src="@/assets/pikachu.png"  />
           </router-link>
         </v-col>
