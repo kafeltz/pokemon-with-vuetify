@@ -60,3 +60,15 @@ export async function getAllPokemonNames() {
     console.error(error);
   }
 }
+
+export async function getPokemonFullInfo(id) {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
