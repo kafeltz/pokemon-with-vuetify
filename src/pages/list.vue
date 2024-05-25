@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref, watch, onMounted } from 'vue';
-import { listPokemons, getPokemonInfo } from '../api/pokemon-api.js';
+import { listPokemons, getPokemonInfo, getAllPokemonNames } from '../api/pokemon-api.js';
 import { useRouter, useRoute } from 'vue-router/auto'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 
@@ -10,29 +10,44 @@ const route = useRoute();
 
 const loading = ref(true);
 const error = ref(null);
-const list = ref([]);
+const pokemonList = ref([]);
+
 const pageNumber = ref(parseInt(route.query.page, 10));
+const paginationLength = ref(1)
 
 const searchClosed = ref(true)
 const search = ref('')
+const searchList = ref([])
+const searchWidth = ref(50)
+const paginationDisabled = ref(true)
 
 async function requestList() {
-  const limit = 10;
+  const limit = 4;
 
   try {
     loading.value = true
 
-    const pokemons = (await listPokemons(pageNumber.value, limit)).results;
+    const list = (await listPokemons(pageNumber.value, limit));
+
+    let pokemons;
+    if (search.value) {
+      pokemons = [{ 'name': search.value }]
+    } else {
+      pokemons = list.results;
+    }
+
+    if (list.count > 0) {
+      paginationLength.value = Math.floor(list.count / limit);
+    }
 
     const x = [];
-
     for (let i = 0; i < pokemons.length; i++) {
       const pokemonInfo = await getPokemonInfo(pokemons[i]['name']);
 
       x.push(pokemonInfo);
     }
 
-    list.value = x;
+    pokemonList.value = x;
   } catch (err) {
     // error.value = err.toString()
     console.error(err);
@@ -53,11 +68,9 @@ onBeforeRouteUpdate((to, from) => {
   console.log('onBeforeRouteUpdate', to, from);
 })
 
-watch(() => pageNumber.value, () => {
-  requestList();
-  router.push(`/list/?page=${pageNumber.value}`);
-  console.log(`watch: ${pageNumber.value}`);
-}, { immediate: true })
+onMounted(async () => {
+  searchList.value = await getAllPokemonNames();
+});
 
 // https://stackoverflow.com/questions/66419471/vue-3-vite-dynamic-image-src
 function getIconAssetUrl(type) {
@@ -71,19 +84,38 @@ function paddingZeroLeft(n) {
 }
 
 function handleSearchFocus(focused) {
-  searchClosed.value = !focused && search.value.length === 0
+  searchClosed.value = !focused
+  searchWidth.value = focused ? 250 : 50
+}
+
+function handleSearchUpdate(text) {
+  // console.log(text);
+}
+
+function handleSearch(text) {
+  console.log('handleSearch', text);
 }
 
 watch(() => search.value, () => {
-  console.log(search.value);
+  requestList();
+
+  paginationDisabled.value = search.value != null && search.value.length > 0;
+
+  console.log(`paginationEnable.value: ${paginationDisabled.value}`);
 }, { immediate: true })
 
+watch(() => pageNumber.value, () => {
+  requestList();
+  router.push(`/list/?page=${pageNumber.value}`);
+  // console.log(`watch: ${pageNumber.value}`);
+}, { immediate: true })
 </script>
 
 <template>
+
   <v-progress-linear indeterminate color="primary" :active="loading"></v-progress-linear>
 
-  <v-app-bar :elevation="2" image="@/assets/background-app-bar.png" absolute>
+  <v-app-bar absolute scroll-behavior="elevate" :elevation="2" prominent image="@/assets/background-app-bar.png">
     <template v-slot:prepend>
       <v-app-bar-nav-icon></v-app-bar-nav-icon>
     </template>
@@ -91,18 +123,27 @@ watch(() => search.value, () => {
     <v-app-bar-title></v-app-bar-title>
 
     <template v-slot:append>
-      <v-text-field
-      @update:focused="handleSearchFocus"
-      :model-value="search"
-      clearable
-      :class="{ 'closed' : searchClosed }" class="mt-5 expanding-search" filled dense prepend-inner-icon="mdi-magnify" placeholder="Pesquisar"></v-text-field>
+      <!-- <v-text-field @update:focused="handleSearchFocus" :model-value="search" clearable loading
+      :class="{ 'closed': searchClosed }" class="mt-5 expanding-search" filled dense
+      prepend-inner-icon="mdi-magnify" placeholder="Pesquisar"></v-text-field> -->
 
-      <v-btn icon="mdi-dots-vertical"></v-btn>
+      <v-autocomplete
+        @update:focused="handleSearchFocus"
+        @update:modelValue="handleSearchUpdate"
+        @update:search="handleSearch"
+        v-model="search"
+        class="mt-5 expanding-search"
+        prepend-inner-icon="mdi-magnify"
+        :class="{ 'closed': searchClosed }"
+        :items="searchList"
+        :width="searchWidth"></v-autocomplete>
     </template>
   </v-app-bar>
 
-  <div class="ga-5 d-flex flex-wrap">
-    <div class="pokemon-card elevation-3" :class="[pokemon['type']]" v-for="pokemon in list" :key="pokemon['name']">
+
+  <div class="mt-5 ga-2 d-flex flex-wrap justify-center">
+    <div class="pokemon-card elevation-3" :class="[pokemon['type']]" v-for="pokemon in pokemonList"
+      :key="pokemon['name']">
       <v-container class="">
         <v-row no-gutters>
           <v-col cols="6">
@@ -124,18 +165,14 @@ watch(() => search.value, () => {
     </div>
   </div>
 
-  <v-pagination :length="10" next-icon="mdi-menu-right" prev-icon="mdi-menu-left" :total-visible="7"
-    @update:model-value="updatePageNumber" :model-value="pageNumber" :elevation="0"></v-pagination>
-
-  <v-container class="fill-height">
-    <v-responsive class="align-centerfill-height mx-auto" max-width="900">
-    </v-responsive>
-  </v-container>
+  <v-pagination :disabled="paginationDisabled" class="mt-5 mr-7 ml-7" :length="paginationLength" next-icon="mdi-menu-right"
+    prev-icon="mdi-menu-left" :total-visible="5" @update:model-value="updatePageNumber" :model-value="pageNumber"
+    :elevation="0"></v-pagination>
 </template>
 
 <style lang="sass">
 .v-field__outline
-  display: none !important
+    display: none !important
 
 .v-field
   cursor: pointer !important
@@ -143,11 +180,14 @@ watch(() => search.value, () => {
 .expanding-search
   width: 300px
   transition: width 0.3s
+
+  .v-field__append-inner i
+    display: none
+
   &.closed
     width: 50px
   .v-field__overlay
     background: transparent !important
-
 </style>
 
 <!-- https://bulbapedia.bulbagarden.net/wiki/Type -->

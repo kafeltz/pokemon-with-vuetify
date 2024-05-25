@@ -1,7 +1,8 @@
 // page é zero-index
 export async function listPokemons(page, limit) {
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${limit * (page - 1)}`);
+    const offset = (page - 1) * limit;
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${offset}`);
 
     const list = await response.json();
 
@@ -10,7 +11,6 @@ export async function listPokemons(page, limit) {
     console.error(error);
   }
 }
-
 
 export async function getPokemonInfo(id) {
   try {
@@ -27,6 +27,35 @@ export async function getPokemonInfo(id) {
     }
 
     return info;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getAllPokemonNames() {
+  try {
+    const maxTry = 5; // não ir além disso
+    let limit = 500;
+    let offset = 0;
+    let url = `https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${offset}`
+    const list = [];
+
+    let i = 0;
+    while (i < maxTry && url !== null) {
+      console.info(`getAllPokemonNames: ${i} ${url}`);
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      for (let j = 0; j < data.results.length; j++) {
+        list.push(data.results[j].name);
+      }
+
+      url = data.next;
+      i++;
+    }
+
+    return list;
   } catch (error) {
     console.error(error);
   }

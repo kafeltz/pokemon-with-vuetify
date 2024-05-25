@@ -1,5 +1,8 @@
 <template>
   <v-app>
+
+    <v-slot name="mytoolbar"></v-slot>
+
     <v-main>
       <router-view />
     </v-main>
@@ -7,7 +10,5 @@
 </template>
 
 <script setup>
-  //
+//
 </script>
-
-
