@@ -8,15 +8,20 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 const router = useRouter()
 const route = useRoute();
 
-const loading = ref(false);
+const loading = ref(true);
 const error = ref(null);
 const list = ref([]);
 const pageNumber = ref(parseInt(route.query.page, 10));
 
+const searchClosed = ref(true)
+const search = ref('')
+
 async function requestList() {
-  const limit = 15;
+  const limit = 10;
 
   try {
+    loading.value = true
+
     const pokemons = (await listPokemons(pageNumber.value, limit)).results;
 
     const x = [];
@@ -65,26 +70,51 @@ function paddingZeroLeft(n) {
   return String(n).padStart(4, '0');
 }
 
+function handleSearchFocus(focused) {
+  searchClosed.value = !focused && search.value.length === 0
+}
+
+watch(() => search.value, () => {
+  console.log(search.value);
+}, { immediate: true })
+
 </script>
 
 <template>
-  <v-breadcrumbs bg-color="primary" :items="['Foo', 'Bar', 'Fizz']"></v-breadcrumbs>
+  <v-progress-linear indeterminate color="primary" :active="loading"></v-progress-linear>
+
+  <v-app-bar :elevation="2" image="@/assets/background-app-bar.png" absolute>
+    <template v-slot:prepend>
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+    </template>
+
+    <v-app-bar-title></v-app-bar-title>
+
+    <template v-slot:append>
+      <v-text-field
+      @update:focused="handleSearchFocus"
+      :model-value="search"
+      clearable
+      :class="{ 'closed' : searchClosed }" class="mt-5 expanding-search" filled dense prepend-inner-icon="mdi-magnify" placeholder="Pesquisar"></v-text-field>
+
+      <v-btn icon="mdi-dots-vertical"></v-btn>
+    </template>
+  </v-app-bar>
 
   <div class="ga-5 d-flex flex-wrap">
     <div class="pokemon-card elevation-3" :class="[pokemon['type']]" v-for="pokemon in list" :key="pokemon['name']">
-
-      <v-container class="" fluid="true">
+      <v-container class="">
         <v-row no-gutters>
           <v-col cols="6">
             <p class="font-weight-medium text-center text-capitalize black">{{ pokemon['name'] }}</p>
           </v-col>
 
           <v-col cols="5">
-            <p class="font-weight-medium text-center text-capitalize black">#{{ paddingZeroLeft(pokemon['number']) }}</p>
+            <p class="font-weight-medium text-center text-capitalize black">#{{ paddingZeroLeft(pokemon['number']) }}
+            </p>
           </v-col>
         </v-row>
       </v-container>
-
 
       <v-img class="pokemon-icon" :class="[pokemon['type']]" max-height="30" aspect-ratio="1"
         :src="getIconAssetUrl(pokemon['type'])" />
@@ -103,6 +133,22 @@ function paddingZeroLeft(n) {
   </v-container>
 </template>
 
+<style lang="sass">
+.v-field__outline
+  display: none !important
+
+.v-field
+  cursor: pointer !important
+
+.expanding-search
+  width: 300px
+  transition: width 0.3s
+  &.closed
+    width: 50px
+  .v-field__overlay
+    background: transparent !important
+
+</style>
 
 <!-- https://bulbapedia.bulbagarden.net/wiki/Type -->
 <style scoped lang="sass">
