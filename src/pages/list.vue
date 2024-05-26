@@ -3,7 +3,6 @@
 import { ref, watch, onMounted } from 'vue';
 import { listPokemons, getPokemonInfo, getAllPokemonNames } from '../api/pokemon-api.js';
 import { useRouter, useRoute } from 'vue-router/auto'
-import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import { getIconAssetUrl } from '../lib/helpers.js'
 
 const router = useRouter()
@@ -61,14 +60,6 @@ function updatePageNumber(value) {
   pageNumber.value = value;
 }
 
-onBeforeRouteLeave((to, from) => {
-  console.log('onBeforeRouteLeave', to, from);
-})
-
-onBeforeRouteUpdate((to, from) => {
-  console.log('onBeforeRouteUpdate', to, from);
-})
-
 onMounted(async () => {
   searchList.value = await getAllPokemonNames();
 });
@@ -88,13 +79,6 @@ function handleSearchUpdate(text) {
 
 function handleSearch(text) {
   console.log('handleSearch', text);
-}
-
-async function handlePokemonClick(e) {
-  const id = e.currentTarget.dataset.id
-
-  await router.push(`/detail?id=${id}`)
-
 }
 
 watch(() => search.value, () => {
@@ -161,10 +145,10 @@ watch(() => pageNumber.value, () => {
       <v-img class="pokemon-icon" :class="[pokemon['type']]" max-height="30" aspect-ratio="1"
         :src="getIconAssetUrl(pokemon['type'])" />
 
-      <!-- <p>{{ pokemon['type'] }}</p> -->
-      <a href="#" @click="handlePokemonClick" :data-id="[pokemon['number']]">
-        <v-img :src="pokemon['male']" aspect-ratio="1" max-height="120"></v-img>
-      </a>
+        <!-- <p>{{ pokemon['type'] }}</p> -->
+        <router-link :to="'/detail?id=' + pokemon.number">
+          <v-img :src="pokemon['male']" aspect-ratio="1" max-height="120"></v-img>
+        </router-link>
     </div>
   </div>
 
