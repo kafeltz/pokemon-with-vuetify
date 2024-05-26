@@ -90,6 +90,13 @@ function handleSearch(text) {
   console.log('handleSearch', text);
 }
 
+async function handlePokemonClick(e) {
+  const id = e.currentTarget.dataset.id
+
+  await router.push(`/detail?id=${id}`)
+
+}
+
 watch(() => search.value, () => {
   requestList();
 
@@ -155,7 +162,9 @@ watch(() => pageNumber.value, () => {
         :src="getIconAssetUrl(pokemon['type'])" />
 
       <!-- <p>{{ pokemon['type'] }}</p> -->
-      <v-img :src="pokemon['male']" aspect-ratio="1" max-height="100"></v-img>
+      <a href="#" @click="handlePokemonClick" :data-id="[pokemon['number']]">
+        <v-img :src="pokemon['male']" aspect-ratio="1" max-height="120"></v-img>
+      </a>
     </div>
   </div>
 
