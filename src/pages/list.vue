@@ -4,6 +4,7 @@ import { ref, watch, onMounted } from 'vue';
 import { listPokemons, getPokemonInfo, getAllPokemonNames } from '../api/pokemon-api.js';
 import { useRouter, useRoute } from 'vue-router/auto'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { getIconAssetUrl } from '../lib/helpers.js'
 
 const router = useRouter()
 const route = useRoute();
@@ -71,13 +72,6 @@ onBeforeRouteUpdate((to, from) => {
 onMounted(async () => {
   searchList.value = await getAllPokemonNames();
 });
-
-// https://stackoverflow.com/questions/66419471/vue-3-vite-dynamic-image-src
-function getIconAssetUrl(type) {
-  const url = new URL(`../assets/icon-${type}.png`, import.meta.url).href;
-
-  return url;
-}
 
 function paddingZeroLeft(n) {
   return String(n).padStart(4, '0');
@@ -191,68 +185,48 @@ watch(() => pageNumber.value, () => {
 </style>
 
 <!-- https://bulbapedia.bulbagarden.net/wiki/Type -->
-<style scoped lang="sass">
-  $ground: #915121
-  $fairy: #EF70EF
-  $psychic: #5A5A5A
-  $ice: #3DCEF3
-  $dragon: #5060E1
-  $steel: #60A1B8
-  $ghost: #704170
-  $normal: #9FA19F
-  $grass: #3FA129
-  $fire: #E62829
-  $water: #2980EF
-  $bug: #91A119
-  $poison: #9141CB
-  $fighting: #FF8000
-  $psychic: #EF4179
-  $flying: #81B9EF
-  $electric: #FAC000
-  $rock: #AFA981
-  $dark: #624D4E
-  $stellar: #44628D
-  $other: #68A090
+<style lang="sass">
+  @use '@/styles/global'
 
   .pokemon-icon
-    &.normal
-      background-color: $normal
-    &.grass
-      background-color: $grass
-    &.fire
-      background-color: $fire
-    &.water
-      background-color: $water
-    &.bug
-      background-color: $bug
-    &.poison
-      background-color: $poison
-    &.ground
-      background-color: $ground
-    &.fairy
-      background-color: $fairy
-    &.fighting
-      background-color: $fighting
-    &.flying
-      background-color: $flying
-    &.electric
-      background-color: $electric
-    &.rock
-      background-color: $rock
-    &.dark
-      background-color: $dark
-    &.stellar
-      background-color: $stellar
-    &.other
-      background-color: $other
-    &.ghost
-      background-color: $ghost
-    &.ice
-      background-color: $ice
-    &.psychic
-      background-color: $psychic
-    &.dragon
-      background-color: $dragon
+      &.normal
+        background-color: global.$normal
+      &.grass
+        background-color: global.$grass
+      &.fire
+        background-color: global.$fire
+      &.water
+        background-color: global.$water
+      &.bug
+        background-color: global.$bug
+      &.poison
+        background-color: global.$poison
+      &.ground
+        background-color: global.$ground
+      &.fairy
+        background-color: global.$fairy
+      &.fighting
+        background-color: global.$fighting
+      &.flying
+        background-color: global.$flying
+      &.electric
+        background-color: global.$electric
+      &.rock
+        background-color: global.$rock
+      &.dark
+        background-color: global.$dark
+      &.stellar
+        background-color: global.$stellar
+      &.other
+        background-color: global.$other
+      &.ghost
+        background-color: global.$ghost
+      &.ice
+        background-color: global.$ice
+      &.psychic
+        background-color: global.$psychic
+      &.dragon
+        background-color: global.$dragon
 
   .pokemon-card
     background: rgb(237,237,237)
@@ -270,41 +244,41 @@ watch(() => pageNumber.value, () => {
     border-right-style: solid
 
     &.normal
-      border-color: $normal
+      border-color: global.$normal
     &.grass
-      border-color: $grass
+      border-color: global.$grass
     &.fire
-      border-color: $fire
+      border-color: global.$fire
     &.water
-      border-color: $water
+      border-color: global.$water
     &.bug
-      border-color: $bug
+      border-color: global.$bug
     &.poison
-      border-color: $poison
+      border-color: global.$poison
     &.ground
-      border-color: $ground
+      border-color: global.$ground
     &.fairy
-      border-color: $fairy
+      border-color: global.$fairy
     &.fighting
-      border-color: $fighting
+      border-color: global.$fighting
     &.flying
-      border-color: $flying
+      border-color: global.$flying
     &.electric
-      border-color: $electric
+      border-color: global.$electric
     &.rock
-      border-color: $rock
+      border-color: global.$rock
     &.dark
-      border-color: $dark
+      border-color: global.$dark
     &.stellar
-      border-color: $stellar
+      border-color: global.$stellar
     &.ghost
-      background-color: $ghost
+      border-color: global.$ghost
     &.other
-      border-color: $other
+      border-color: global.$other
     &.ice
-      border-color: $ice
+      border-color: global.$ice
     &.psychic
-      border-color: $psychic
+      border-color: global.$psychic
     &.dragon
-      border-color: $dragon
+      border-color: global.$dragon
 </style>
