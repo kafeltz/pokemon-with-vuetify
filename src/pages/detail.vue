@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router/auto'
-import { onBeforeMount, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { getPokemonFullInfo } from '../api/pokemon-api.js';
 import { paddingZeroLeft } from '../lib/helpers.js';
 
@@ -8,6 +8,8 @@ const router = useRouter();
 const route = useRoute();
 const pokemonId = ref(parseInt(route.query.id, 10));
 const pokemon = ref(null);
+
+const drawer = ref(false)
 
 function getStat(json, kind) {
   for (let i = 0; i < json.stats.length; i++) {
@@ -23,6 +25,18 @@ watch(() => pokemonId.value, async () => {
 }, { immediate: true });
 
 onMounted(async () => {
+  if (localStorage.getItem('pokemon-history') == null) {
+    localStorage.setItem('pokemon-history', '[]');
+  }
+
+  const localStorageToJson = JSON.parse(localStorage.getItem('pokemon-history'));
+
+  if (!localStorageToJson.find((x) => x == pokemonId.value)) {
+    localStorageToJson.push(pokemonId.value);
+  }
+
+  localStorage.setItem('pokemon-history', JSON.stringify(localStorageToJson));
+
   pokemon.value = await getPokemonFullInfo(pokemonId.value);
 });
 
@@ -30,13 +44,14 @@ function handleGoBack() {
   router.go(-1);
 }
 
+
 </script>
 
 <template>
 
   <v-app-bar absolute scroll-behavior="elevate" :elevation="2" prominent image="@/assets/background-app-bar.png">
     <template v-slot:prepend>
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     </template>
 
     <v-app-bar-title></v-app-bar-title>
@@ -46,11 +61,25 @@ function handleGoBack() {
     </template>
   </v-app-bar>
 
+  <v-navigation-drawer
+    v-model="drawer"
+    temporary
+    floating
+  >
+    <v-divider></v-divider>
+
+    <v-list density="compact" nav>
+      <v-list-item prepend-icon="mdi-view-dashboard" title="Home" value="home" to="/"></v-list-item>
+      <v-list-item prepend-icon="mdi-history" title="Histórico" value="Histórico"></v-list-item>
+      <v-list-item prepend-icon="mdi-github" title="Ismael Kafeltz" value="Ismael Kafeltz" target="blank" href="https://github.com/kafeltz/pokemon-with-vuetify"></v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+
   <div class="pokemon-box rounded-lg elevation-1 mt-4 mr-4 ml-4" v-if="!pokemon">
     <v-skeleton-loader type="card"></v-skeleton-loader>
   </div>
 
-  <div class="pokemon-box rounded-lg elevation-1 mt-4 mr-4 ml-4" v-if="pokemon"  :class="[pokemon['types'][0]['type']['name']]">
+  <div class="pokemon-box rounded-lg elevation-1 mt-4 mr-4 ml-4" v-if="pokemon" :class="[pokemon['types'][0]['type']['name']]">
     <v-container>
       <v-row>
         <v-col :cols="6">

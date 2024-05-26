@@ -62,6 +62,7 @@ function updatePageNumber(value) {
 
 onMounted(async () => {
   searchList.value = await getAllPokemonNames();
+
 });
 
 function paddingZeroLeft(n) {
@@ -71,10 +72,6 @@ function paddingZeroLeft(n) {
 function handleSearchFocus(focused) {
   searchClosed.value = !focused
   searchWidth.value = focused ? 250 : 50
-}
-
-function handleSearchUpdate(text) {
-  // console.log(text);
 }
 
 function handleSearch(text) {
@@ -114,7 +111,6 @@ watch(() => pageNumber.value, () => {
 
       <v-autocomplete
         @update:focused="handleSearchFocus"
-        @update:modelValue="handleSearchUpdate"
         @update:search="handleSearch"
         v-model="search"
         class="mt-5 expanding-search"
