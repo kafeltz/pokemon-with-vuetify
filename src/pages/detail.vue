@@ -1,9 +1,10 @@
 <script setup>
-import { useRoute } from 'vue-router/auto'
-import { onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router/auto'
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 import { getPokemonFullInfo } from '../api/pokemon-api.js';
 import { paddingZeroLeft } from '../lib/helpers.js';
 
+const router = useRouter();
 const route = useRoute();
 const pokemonId = ref(parseInt(route.query.id, 10));
 const pokemon = ref(null);
@@ -25,6 +26,10 @@ onMounted(async () => {
   pokemon.value = await getPokemonFullInfo(pokemonId.value);
 });
 
+function handleGoBack() {
+  router.go(-1);
+}
+
 </script>
 
 <template>
@@ -37,12 +42,17 @@ onMounted(async () => {
     <v-app-bar-title></v-app-bar-title>
 
     <template v-slot:append>
+      <v-app-bar-nav-icon icon="mdi-arrow-left" @click="handleGoBack">      </v-app-bar-nav-icon>
     </template>
   </v-app-bar>
 
+  <div class="pokemon-box rounded-lg elevation-1 mt-4 mr-4 ml-4" v-if="!pokemon">
+    <v-skeleton-loader type="card"></v-skeleton-loader>
+  </div>
+
   <div class="pokemon-box rounded-lg elevation-1 mt-4 mr-4 ml-4" v-if="pokemon"  :class="[pokemon['types'][0]['type']['name']]">
     <v-container>
-      <v-row  >
+      <v-row>
         <v-col :cols="6">
           <p class="ml-3 text-capitalize border-s-lg pl-3 font-weight-medium" v-if="pokemon">
             {{ pokemon['name'] }}
@@ -109,7 +119,6 @@ onMounted(async () => {
           </p>
         </v-col>
       </v-row>
-
 
       <v-row>
         <v-col>
