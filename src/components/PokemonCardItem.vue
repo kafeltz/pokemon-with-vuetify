@@ -18,7 +18,7 @@ const pokemon = defineProps({
         </v-col>
 
         <v-col cols="5">
-          <p class="font-weight-medium text-center text-capitalize black">#{{ paddingZeroLeft(pokemon.number) }}
+          <p class="font-weight-medium text-center text-capitalize black">#{{ paddingZeroLeft(pokemon.number, 4) }}
           </p>
         </v-col>
       </v-row>

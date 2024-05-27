@@ -1,5 +1,5 @@
-export function paddingZeroLeft(n) {
-  return String(n).padStart(4, '0');
+export function paddingZeroLeft(char, total) {
+  return String(char).padStart(total, '0');
 }
 
 // https://stackoverflow.com/questions/66419471/vue-3-vite-dynamic-image-src
