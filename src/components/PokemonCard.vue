@@ -32,7 +32,6 @@ const pokemon = defineProps({
       <v-img :src="pokemon.img" aspect-ratio="1" max-height="120"></v-img>
     </router-link>
   </div>
-
 </template>
 
 <style scoped lang="sass">

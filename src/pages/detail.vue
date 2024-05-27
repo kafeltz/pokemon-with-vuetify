@@ -3,6 +3,8 @@ import { useRoute, useRouter } from 'vue-router/auto'
 import { onMounted, ref, watch } from 'vue';
 import { getPokemonFullInfo } from '../api/pokemon-api.js';
 import { paddingZeroLeft } from '../lib/helpers.js';
+import { LOCAL_STORAGE_HISTORY } from '@/consts/global';
+
 
 const router = useRouter();
 const route = useRoute();
@@ -21,29 +23,26 @@ function getStat(json, kind) {
   return 'n/a'
 }
 
-watch(() => pokemonId.value, async () => {
-}, { immediate: true });
+// watch(() => pokemonId.value, async () => {
+// }, { immediate: true });
 
 onMounted(async () => {
-  if (localStorage.getItem('pokemon-history') == null) {
-    localStorage.setItem('pokemon-history', '[]');
+  if (localStorage.getItem(LOCAL_STORAGE_HISTORY) == null) {
+    localStorage.setItem(LOCAL_STORAGE_HISTORY, '[]');
   }
 
-  const localStorageToJson = JSON.parse(localStorage.getItem('pokemon-history'));
+  const localStorageToJson = JSON.parse(localStorage.getItem(LOCAL_STORAGE_HISTORY));
 
-  if (!localStorageToJson.find((x) => x == pokemonId.value)) {
-    localStorageToJson.push(pokemonId.value);
+  if (pokemonId.value) {
+    if (!localStorageToJson.find((x) => x == pokemonId.value)) {
+      localStorageToJson.push(pokemonId.value);
+    }
   }
 
-  localStorage.setItem('pokemon-history', JSON.stringify(localStorageToJson));
+  localStorage.setItem(LOCAL_STORAGE_HISTORY, JSON.stringify(localStorageToJson));
 
   pokemon.value = await getPokemonFullInfo(pokemonId.value);
 });
-
-function handleGoBack() {
-  router.go(-1);
-}
-
 
 </script>
 
