@@ -7,11 +7,6 @@ const pokemon = defineProps({
   img: { type: String, required: true },
   type: { type: String, required: true },
 });
-
-// const pokemon = defineProps({ pokemon: Object })
-
-// console.log(pokemon);
-
 </script>
 
 <template>

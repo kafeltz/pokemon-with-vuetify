@@ -2,12 +2,11 @@
 import { getIconAssetUrl, paddingZeroLeft } from '../lib/helpers.js'
 
 const pokemon = defineProps({
-  number: { type: String, required: true },
+  number: { type: [String, Number], required: true },
   name: { type: String, required: true },
   img: { type: String, required: true },
   type: { type: String, required: true },
 });
-
 </script>
 
 <template>
