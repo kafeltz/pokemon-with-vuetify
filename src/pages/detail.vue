@@ -49,7 +49,7 @@ function handleGoBack() {
 
 <template>
 
-  <v-app-bar absolute scroll-behavior="elevate" :elevation="2" prominent image="@/assets/background-app-bar.png">
+  <!-- <v-app-bar absolute scroll-behavior="elevate" :elevation="2" prominent image="@/assets/background-app-bar.png">
     <template v-slot:prepend>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     </template>
@@ -70,10 +70,12 @@ function handleGoBack() {
 
     <v-list density="compact" nav>
       <v-list-item prepend-icon="mdi-view-dashboard" title="Home" value="home" to="/"></v-list-item>
-      <v-list-item prepend-icon="mdi-history" title="Histórico" value="Histórico"></v-list-item>
+      <v-list-item prepend-icon="mdi-history" title="Histórico" value="Histórico" to="/history"></v-list-item>
       <v-list-item prepend-icon="mdi-github" title="Ismael Kafeltz" value="Ismael Kafeltz" target="blank" href="https://github.com/kafeltz/pokemon-with-vuetify"></v-list-item>
     </v-list>
-  </v-navigation-drawer>
+  </v-navigation-drawer> -->
+
+  <Menu></Menu>
 
   <div class="pokemon-box rounded-lg elevation-1 mt-4 mr-4 ml-4" v-if="!pokemon">
     <v-skeleton-loader type="card"></v-skeleton-loader>
