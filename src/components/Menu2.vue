@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { getAllPokemonNames } from '../api/pokemon-api.js';
 
+const emit = defineEmits(['onSelectSearch']);
+
 const drawer = ref(false)
 
 const searchClosed = ref(true)
@@ -9,12 +11,21 @@ const search = ref('')
 const searchList = ref([])
 const searchWidth = ref(50)
 
+let pokemonList = []
+
 onMounted(async () => {
-  searchList.value = await getAllPokemonNames();
+  pokemonList = await getAllPokemonNames();
+  searchList.value = pokemonList.map(x => ({ title: x.name, value: x.id }));
+
+  // console.log('onMounted: ', pokemonList)
 });
 
 function handleSearch(text) {
-  console.log('handleSearch', text);
+  const p = pokemonList.find(x => x.name == text)
+
+  emit('onSelectSearch', p.id);
+
+  // console.log('handleSearch', p.id, p.name);
 }
 
 function handleSearchFocus(focused) {
@@ -33,15 +44,9 @@ function handleSearchFocus(focused) {
     <v-app-bar-title></v-app-bar-title>
 
     <template v-slot:append>
-      <v-autocomplete
-        @update:focused="handleSearchFocus"
-        @update:search="handleSearch"
-        v-model="search"
-        class="mt-5 expanding-search"
-        prepend-inner-icon="mdi-magnify"
-        :class="{ 'closed': searchClosed }"
-        :items="searchList"
-        :width="searchWidth"></v-autocomplete>
+      <v-autocomplete @update:focused="handleSearchFocus" @update:search="handleSearch" v-model="search"
+        class="mt-5 expanding-search" prepend-inner-icon="mdi-magnify" :class="{ 'closed' : searchClosed }"
+        :items="searchList" :width="searchWidth"></v-autocomplete>
     </template>
   </v-app-bar>
 

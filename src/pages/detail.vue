@@ -1,17 +1,13 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router/auto'
-import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router/auto'
+import { onMounted, ref } from 'vue';
 import { getPokemonFullInfo } from '../api/pokemon-api.js';
 import { paddingZeroLeft } from '../lib/helpers.js';
 import { LOCAL_STORAGE_HISTORY } from '@/consts/global';
 
-
-const router = useRouter();
 const route = useRoute();
 const pokemonId = ref(parseInt(route.query.id, 10));
 const pokemon = ref(null);
-
-const drawer = ref(false)
 
 function getStat(json, kind) {
   for (let i = 0; i < json.stats.length; i++) {
@@ -22,9 +18,6 @@ function getStat(json, kind) {
 
   return 'n/a'
 }
-
-// watch(() => pokemonId.value, async () => {
-// }, { immediate: true });
 
 onMounted(async () => {
   if (localStorage.getItem(LOCAL_STORAGE_HISTORY) == null) {

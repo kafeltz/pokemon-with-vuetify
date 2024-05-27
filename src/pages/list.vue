@@ -35,7 +35,6 @@ async function requestList() {
 
     pokemonList.value = x;
   } catch (err) {
-    // error.value = err.toString()
     console.error(err);
   } finally {
     loading.value = false
@@ -44,6 +43,12 @@ async function requestList() {
 
 function updatePageNumber(value) {
   pageNumber.value = value;
+}
+
+function handleSearch(text) {
+  router.push(`/detail?id=${text}`);
+
+  console.log(`received handleSearch: `, text);
 }
 
 // watch(() => search.value, () => {
@@ -61,7 +66,7 @@ watch(() => pageNumber.value, () => {
 </script>
 
 <template>
-  <Menu2 />
+  <Menu2 @onSelectSearch="handleSearch" />
 
   <div class="mt-5 ga-2 d-flex flex-wrap justify-center">
     <PokemonCardItem v-for="p in pokemonList" :key="p.number" :number="p.number" :type="p.type" :img="p.male"

@@ -42,13 +42,18 @@ export async function getAllPokemonNames() {
 
     let i = 0;
     while (i < maxTry && url !== null) {
-      console.info(`getAllPokemonNames: ${i} ${url}`);
+      // console.info(`getAllPokemonNames: ${i} ${url}`);
 
       const response = await fetch(url);
       const data = await response.json();
 
       for (let j = 0; j < data.results.length; j++) {
-        list.push(data.results[j].name);
+        const obj = {
+          id: data.results[j].url.match(/(\d+)\/$/)[1],
+          name: data.results[j].name,
+        }
+
+        list.push(obj);
       }
 
       url = data.next;
