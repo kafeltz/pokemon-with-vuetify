@@ -3,6 +3,7 @@ import { LOCAL_STORAGE_HISTORY } from '@/consts/global';
 import { ref, onMounted } from 'vue';
 import { getPokemonInfo } from '../api/pokemon-api.js'
 
+const maxItens = 50; // segurança
 let loading = ref(true);
 let listPokemon = ref([]);
 onMounted(async () => {
@@ -12,7 +13,7 @@ onMounted(async () => {
 
     const listIds = JSON.parse(item);
 
-    for (let i = 0; i < listIds.length; i++) {
+    for (let i = 0; i < listIds.length && i < maxItens; i++) {
       const id = listIds[i];
       const pokemon = await getPokemonInfo(id);
 
