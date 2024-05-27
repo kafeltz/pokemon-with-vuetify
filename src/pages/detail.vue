@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router/auto'
 import { onMounted, ref } from 'vue';
 import { getPokemonFullInfo } from '../api/pokemon-api.js';
 import { paddingZeroLeft } from '../lib/helpers.js';
-import { LOCAL_STORAGE_HISTORY } from '@/consts/global';
+import { LOCAL_STORAGE_HISTORY, LOCAL_STORAGE_HISTORY_MAX } from '@/consts/global';
 
 const route = useRoute();
 const pokemonId = ref(parseInt(route.query.id, 10));
@@ -24,7 +24,10 @@ onMounted(async () => {
     localStorage.setItem(LOCAL_STORAGE_HISTORY, '[]');
   }
 
-  const localStorageToJson = JSON.parse(localStorage.getItem(LOCAL_STORAGE_HISTORY));
+  let localStorageToJson = JSON.parse(localStorage.getItem(LOCAL_STORAGE_HISTORY));
+  if (localStorageToJson.length >= LOCAL_STORAGE_HISTORY_MAX) {
+    localStorageToJson = localStorageToJson.slice(1, LOCAL_STORAGE_HISTORY_MAX);
+  }
 
   if (pokemonId.value) {
     if (!localStorageToJson.find((x) => x == pokemonId.value)) {
