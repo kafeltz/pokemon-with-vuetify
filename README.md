@@ -13,6 +13,12 @@ nvm use 18
 # desenvolvimento
 npm run dev
 
+# build
+npm run build
+
+# preview
+npm run preview
+
 # Testes
 npm run test
 ```
